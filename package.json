@@ -1,0 +1,27 @@
+{
+  "name": "scraperapp",
+  "version": "1.0.0",
+  "description": "newsplatform",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mbolters/ScraperApp.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mbolters/ScraperApp/issues"
+  },
+  "homepage": "https://github.com/mbolters/ScraperApp#readme",
+  "dependencies": {
+    "axios": "^0.19.0",
+    "cheerio": "^1.0.0-rc.3",
+    "express": "^4.17.1",
+    "express-handlebars": "^3.1.0",
+    "heroku": "^7.35.0",
+    "mongoose": "^5.8.0"
+  }
+}

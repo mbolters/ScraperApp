@@ -1,6 +1,7 @@
 // Dependencies
 var express = require("express");
 var mongojs = require("mongojs");
+var mongoose = require("mongoose");
 // Require axios and cheerio. This makes the scraping possible
 var axios = require("axios");
 var cheerio = require("cheerio");
@@ -81,6 +82,6 @@ app.get("/scrape", function(req, res) {
 
 
 // Listen on port 3000
-app.listen(8000, function() {
-  console.log("App running on port 8000!");
+app.listen(3000, function() {
+  console.log("App running on port 3000!");
 });

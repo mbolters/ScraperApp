@@ -141,6 +141,18 @@ router.post("/comment/:id", function(req,res){
         } else {
             console.log(doc.id);
             console.log(articleId);
+
+            Article.findOneAndUpdate(
+                {_id: req.params.id},
+                {$push: { comment: doc._id }},
+                {new: true}
+            ).exec(function(err, doc){
+                if (err){
+                    console.log(err);
+                } else {
+                    res.redirect("/readArticle/" + articleId);
+                }
+            })
         }
     })
 })

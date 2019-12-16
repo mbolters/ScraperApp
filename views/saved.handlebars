@@ -1,0 +1,16 @@
+<div>
+    <h1 class="card z-depth-3 center-align" id="shadow">Saved Articles'</h1>
+</div>
+<div class="row">
+    <div class="col s2"></div>
+    <div class="col s8 left-align" >
+        {{#each saved}}
+        <div class="card-panel"  id="shadow">
+            <h4>{{this.title}}</h4>
+            <a href="/clearAll/{{this._id}}" class="waves-effect waves-light btn" id="btnSignUp">Delete Article</a>
+
+        </div>
+
+        {{/each}}
+    </div>
+</div>

@@ -1,8 +1,8 @@
-var mongoose = require ('mongoose');
+var mongoose = require ("mongoose");
 
 //article schema
-var schema = mongoose.schema;
-var articleSchema = new schema({
+var Schema = mongoose.Schema;
+var ArticleSchema = new Schema({
     title: {
         type: String,
         required: true
@@ -13,10 +13,11 @@ var articleSchema = new schema({
     },
     //comment is an array
     comment: [{
-        type: schema.types.objectId, 
+        type: Schema.Types.ObjectId, 
         ref: "Comment"
     }]
 })
 
-var article = mongoose.model("article", articleSchema);
-module.exports = article;
+var Article = mongoose.model("Article", ArticleSchema);
+module.exports = Article;
+

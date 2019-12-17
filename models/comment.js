@@ -10,6 +10,10 @@ var CommentSchema = new Schema({
         type: String,
         required: true
     },
+    article: {
+        type: String,
+        required: true
+    },
 })
 
 var Comment = mongoose.model("Comment", CommentSchema);

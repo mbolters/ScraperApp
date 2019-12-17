@@ -30,18 +30,21 @@
     <div class="card col"> 
         <div class= "row">
             <div class="col s2"></div>
-            <div class="col s8">
                 <h5>Comments:</h5>
                 {{#if article.comment}}
                 {{#each article.comment}}
+                <form action="/deleteComment/{{_id}}" method="GET" class="col s8">
                 <div class="card">
                     <p id="nameComment">{{name}}</p>
                     <p>{{body}}<p>
+                    <button class="btn add-comment-button topnav waves-effect waves-light" id="btnSignUp" type="delete" value="Delete">Delete</button>
                 </div>
+                </form>
                 {{/each}}
                 {{else}}
                 <p>No Comments Yet.</p>
                 {{/if}}
+            
             </div>
         </div>
     </div>

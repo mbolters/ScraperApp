@@ -21,7 +21,7 @@ router.get("/scrape", function(req, res) {
   
       $(".c-entry-box--compact__title").each(function(i, element) {
         var result = {};
-  
+
         result.title = $(this)
           .children("a")
           .text();
@@ -29,7 +29,7 @@ router.get("/scrape", function(req, res) {
           .children("a")
           .attr("href");
 
-          if (result.title !== "" && result.link !== "") {
+          if (result.title !== "" && result.link !== "" && result.summary !== "") {
             if (titlesArray.indexOf(result.title) == -1) {
               titlesArray.push(result.title);
     
@@ -126,13 +126,17 @@ router.get("/readArticle/:id", function(req, res) {
 });
 //where user can display and add comments from mongodb database
 router.post("/comment/:id", function(req,res){
+
+    console.log("its trying to save");
+
     var user = req.body.name;
     var content = req.body.comment;
     var articleId = req.params.id;
 
     var commentObj = {
         name: user,
-        body: content
+        body: content,
+        article: articleId
     };
 
     var newComment = new Comment(commentObj);
@@ -154,72 +158,87 @@ router.post("/comment/:id", function(req,res){
                 } else {
                     res.redirect("/readArticle/" + articleId);
                 }
-            })
+            });
         }
-    })
-})
+    });
+});
+
+// Delete comment.
+router.get('/deleteComment/:comment', function(req, res) {
+
+
+    Comment.findOneAndDelete(
+        {_id: req.params.comment}
+        ).exec(function(error, data) {
+        if (error) {
+            console.log(error);
+        } else {
+            res.redirect("/readArticle/" +  data.article);
+        }
+    });
+});
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //find article by id and grab article from link
-    Article.findOne({ _id: articleId })
-    .populate("saved")
-    .exec(function(err, doc) {
-      if (err) {
-        console.log("Error: " + err);
-      } else {
-        hbsObj.article = doc;
-        var link = doc.link;
-        request(link, function(error, response, html) {
-          var $ = cheerio.load(html);
+//     //find article by id and grab article from link
+//     Article.findOne({ _id: articleId })
+//     .populate("saved")
+//     .exec(function(err, doc) {
+//       if (err) {
+//         console.log("Error: " + err);
+//       } else {
+//         hbsObj.article = doc;
+//         var link = doc.link;
+//         request(link, function(error, response, html) {
+//           var $ = cheerio.load(html);
 
-          $(".l-col__main").each(function(i, element) {
-            hbsObj.body = $(this)
-              .children(".c-entry-content")
-              .children("p")
-              .text();
+//           $(".l-col__main").each(function(i, element) {
+//             hbsObj.body = $(this)
+//               .children(".c-entry-content")
+//               .children("p")
+//               .text();
 
-            res.render("saved", hbsObj);
-            return false;
-          });
-        });
-      }
-    });
-});
-//where user can display and add comments from mongodb database
-router.post("/saved/:id", function(req,res){
-    var user = req.body.name;
-    var content = req.body.comment;
-    var articleId = req.params.id;
+//             res.render("saved", hbsObj);
+//             return false;
+//           });
+//         });
+//       }
+//     });
+// });
+// //where user can display and add comments from mongodb database
+// router.post("/saved/:id", function(req,res){
+//     var user = req.body.name;
+//     var content = req.body.comment;
+//     var articleId = req.params.id;
 
-    var savedObj = {
-        name: user,
-        body: content
-    };
+//     var savedObj = {
+//         name: user,
+//         body: content
+//     };
 
-    var newSaved = new Saved(savedObj);
+//     var newSaved = new Saved(savedObj);
 
-    newComment.save(function(err, doc){
-        if (err){
-            console.log(err);
-        } else {
-            console.log(doc.id);
-            console.log(articleId);
+//     newComment.save(function(err, doc){
+//         if (err){
+//             console.log(err);
+//         } else {
+//             console.log(doc.id);
+//             console.log(articleId);
 
-            Article.findOneAndUpdate(
-                {_id: req.params.id},
-                {$push: { comment: doc._id }},
-                {new: true}
-            ).exec(function(err, doc){
-                if (err){
-                    console.log(err);
-                } else {
-                    res.redirect("/readArticle/" + articleId);
-                }
-            })
-        }
-    })
-})
+//             Article.findOneAndUpdate(
+//                 {_id: req.params.id},
+//                 {$push: { comment: doc._id }},
+//                 {new: true}
+//             ).exec(function(err, doc){
+//                 if (err){
+//                     console.log(err);
+//                 } else {
+//                     res.redirect("/readArticle/" + articleId);
+//                 }
+//             })
+//         }
+//     })
+// })
 
 
 

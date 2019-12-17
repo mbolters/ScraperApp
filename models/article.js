@@ -11,6 +11,10 @@ var ArticleSchema = new Schema({
         type: String,
         required: true
     },
+    // summary: {
+    //     type: String,
+    //     required: true
+    // },
     //comment is an array
     comment: [{
         type: Schema.Types.ObjectId, 

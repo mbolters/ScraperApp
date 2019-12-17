@@ -5,9 +5,9 @@ var path = require("path");
 var request = require("request");
 var cheerio = require("cheerio");
 
-var Comment = require("./Comment.js");
-var Article = require("./Article.js");
-var Saved = require("./Saved.js");
+var Comment = require("../models/Comment");
+var Article = require("../models/Article");
+var Saved = require("../models/Saved");
 
 
 router.get("/", function(req, res) {

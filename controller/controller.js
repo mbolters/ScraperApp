@@ -18,10 +18,9 @@ router.get("/scrape", function(req, res) {
     request("http://www.theverge.com", function(error, response, html) {
       var $ = cheerio.load(html);
       var titlesArray = [];
-  
+
       $(".c-entry-box--compact__title").each(function(i, element) {
         var result = {};
-
         result.title = $(this)
           .children("a")
           .text();
@@ -29,22 +28,25 @@ router.get("/scrape", function(req, res) {
           .children("a")
           .attr("href");
 
-          if (result.title !== "" && result.link !== "" && result.summary !== "") {
+          if (result.title !== "" && result.link !== "") {
             if (titlesArray.indexOf(result.title) == -1) {
               titlesArray.push(result.title);
-    
-              Article.count({ title: result.title }, function(err, test) {
-                if (test === 0) {
-                  var entry = new Article(result);
-    
-                  entry.save(function(err, doc) {
-                    if (err) {
-                      console.log(err);
-                    } else {
-                      console.log(doc);
+            //search articles database for title and count
+              Article.count({ title: result.title }, function (err, test) {
+                //make sure there are 0 articles with that title in articles and saved DB
+                Saved.count({ title: result.title }, function (err, saveTest) {
+                    if (test === 0 && saveTest === 0) {
+                        var entry = new Article(result);
+        
+                        entry.save(function(err, doc) {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            console.log(doc);
+                        }
+                        });
                     }
-                  });
-                }
+                });
               });
             } else {
               console.log("Article already exists.");
@@ -52,10 +54,10 @@ router.get("/scrape", function(req, res) {
           } else {
             console.log("Not saved to DB, missing data");
           }
-        });
-        res.redirect("/");
       });
+      res.redirect("/");
     });
+});
 
 router.get("/articles", function(req, res) {
   Article.find()
@@ -176,6 +178,55 @@ router.get('/deleteComment/:comment', function(req, res) {
             res.redirect("/readArticle/" +  data.article);
         }
     });
+});
+
+//where user can display and add comments from mongodb database
+router.get("/saveArticle/:id", function(req,res){
+    
+    Article.findOne(
+        {
+          // Using the id in the url
+          _id: req.params.id
+        },
+        function(error, found) {
+          // log any errors
+          if (error) {
+            console.log(error);
+            res.send(error);
+          }
+          else {
+            console.log(found);
+
+            var savedArt = {
+                title: found.title,
+                link: found.link,
+                comment: found.comment
+            };
+        
+            var newSavedArt = new Saved(savedArt);
+
+            newSavedArt.save(function(err, doc){
+                if (err){
+                    console.log(err);
+                } else {
+                    console.log(doc.id);
+                    Article.findOneAndDelete(
+                        {_id: req.params.id}
+                        ).exec(function(error, data) {
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            res.redirect("/articles");
+                        }
+                    });
+
+                }
+            });
+
+
+          }
+        }
+      );
 });
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

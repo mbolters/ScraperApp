@@ -5,9 +5,9 @@ var path = require("path");
 var request = require("request");
 var cheerio = require("cheerio");
 
-var Comment = require("./../models/Comment");
-var Article = require("./../models/Article");
-var Saved = require("./../models/Saved");
+var Comment = require("../models/Comment");
+var Article = require("../models/Article");
+var Saved = require("../models/Saved");
 
 
 router.get("/", function(req, res) {
@@ -180,8 +180,55 @@ router.get('/deleteComment/:comment', function(req, res) {
     });
 });
 
+//route to find specific article by id
+router.get("/readSaved/:id", function(req, res) {
+    var articleId = req.params.id;
+    var hbsObj = {
+      article: [],
+      body: []
+    };
+      //find article by id and grab article from link
+      Saved.findOne({ _id: articleId })
+      .populate("comment")
+      .exec(function(err, doc) {
+        if (err) {
+          console.log("Error: " + err);
+        } else {
+          hbsObj.article = doc;
+          var link = doc.link;
+          request(link, function(error, response, html) {
+            var $ = cheerio.load(html);
+  
+            $(".l-col__main").each(function(i, element) {
+              hbsObj.body = $(this)
+                .children(".c-entry-content")
+                .children("p")
+                .text();
+  
+              res.render("article", hbsObj);
+              return false;
+            });
+          });
+        }
+      });
+  });
+//save article page 
+
+router.get("/saved", function(req, res){
+    Saved.find()
+    .sort({ _id: -1 })
+    .exec(function(err, doc) {
+      if (err) {
+        console.log(err);
+      } else {
+        var artcl = { article: doc };
+        res.render("saved", artcl);
+      }
+    });
+});
+
 //where user can display and add comments from mongodb database
-router.get("/saveArticle/:id", function(req,res){
+router.get("/savedArticle/:id", function(req,res){
     
     Article.findOne(
         {
@@ -228,77 +275,19 @@ router.get("/saveArticle/:id", function(req,res){
         }
       );
 });
+// Delete article.
+router.get('/deleteArticle/:id', function(req, res) {
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-//     //find article by id and grab article from link
-//     Article.findOne({ _id: articleId })
-//     .populate("saved")
-//     .exec(function(err, doc) {
-//       if (err) {
-//         console.log("Error: " + err);
-//       } else {
-//         hbsObj.article = doc;
-//         var link = doc.link;
-//         request(link, function(error, response, html) {
-//           var $ = cheerio.load(html);
-
-//           $(".l-col__main").each(function(i, element) {
-//             hbsObj.body = $(this)
-//               .children(".c-entry-content")
-//               .children("p")
-//               .text();
-
-//             res.render("saved", hbsObj);
-//             return false;
-//           });
-//         });
-//       }
-//     });
-// });
-// //where user can display and add comments from mongodb database
-// router.post("/saved/:id", function(req,res){
-//     var user = req.body.name;
-//     var content = req.body.comment;
-//     var articleId = req.params.id;
-
-//     var savedObj = {
-//         name: user,
-//         body: content
-//     };
-
-//     var newSaved = new Saved(savedObj);
-
-//     newComment.save(function(err, doc){
-//         if (err){
-//             console.log(err);
-//         } else {
-//             console.log(doc.id);
-//             console.log(articleId);
-
-//             Article.findOneAndUpdate(
-//                 {_id: req.params.id},
-//                 {$push: { comment: doc._id }},
-//                 {new: true}
-//             ).exec(function(err, doc){
-//                 if (err){
-//                     console.log(err);
-//                 } else {
-//                     res.redirect("/readArticle/" + articleId);
-//                 }
-//             })
-//         }
-//     })
-// })
-
-
-
-
-
-
-
-
-
+    Saved.findOneAndDelete(
+        {_id: req.params.id}
+        ).exec(function(error, data) {
+        if (error) {
+            console.log(error);
+        } else {
+            res.redirect("/saved");
+        }
+    });
+});
 
 
 module.exports = router;

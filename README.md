@@ -1,5 +1,7 @@
 # ScraperApp
 
+## Heroku Link: (https://fierce-thicket-80426.herokuapp.com/articles)
+
 # All the News That's Fit to Scrape
 
 ### Overview

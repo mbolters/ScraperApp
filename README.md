@@ -2,7 +2,6 @@
 
 ## Website: (https://fierce-thicket-80426.herokuapp.com/articles)
 
-# article-scraper-to-mongo
 * A screen scraper that will grab articles from The Onion and send those articles/comments to mongo-db
 * Languages/Frameworks/Packages: JavaScript, Node.js, MongoDB, Express-handlebars, Mongoose, Cheerio, Express, Axios, 
 
